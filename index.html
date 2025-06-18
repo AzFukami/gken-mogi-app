@@ -154,6 +154,14 @@
         .category-score {
             font-weight: bold;
         }
+        /* 600px 以下は解説を通常フローに */
+　　　　@media (max-width: 600px){
+　　　  #feedback{
+  　　　  position: static !important;   /* absolute を無効化 */
+  　　　  width: 100%      !important;
+   　　　 margin-top: 1rem !important;
+  }
+}
     </style>
 </head>
 <body>
@@ -5476,8 +5484,6 @@
 })();
 </script>
 
-
-<script>
 /* ==== explanation runtime cleaner v30c ==== */
 function cleanse(text){
   return text
@@ -5496,6 +5502,29 @@ document.addEventListener('DOMContentLoaded', ()=>{
   });
 });
 </script>
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  /* selectOption をラップしてモバイル対応 */
+  if (typeof selectOption === 'function' && !selectOption._patched){
+    const orig = selectOption;
+    window.selectOption = function(choice){
+      orig(choice);                      // 元の処理で解説を描画
+      const fb = document.getElementById('feedback');
+      const mob = window.matchMedia('(max-width:600px)').matches;
 
+      if (mob && fb){
+        /* 1. 選択肢ブロックの直後に再配置 */
+        const list = document.getElementById('options-list') ||
+                     fb.parentElement.querySelector('.options');
+        if (list && !list.contains(fb)) list.insertAdjacentElement('afterend', fb);
+
+        /* 2. スクロールして確実に見せる */
+        fb.scrollIntoView({behavior:'smooth', block:'start'});
+      }
+    };
+    selectOption._patched = true;
+  }
+});
+</script>
 </body>
 </html>
