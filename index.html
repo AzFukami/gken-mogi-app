@@ -5541,6 +5541,30 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 });
 </script>
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  /* nextQuestion があればラップしてフィードバックを消す */
+  if (typeof nextQuestion === 'function' && !nextQuestion.__patched){
+    const orig = nextQuestion;
+    window.nextQuestion = function(){
+      /* 1) 既存のフィードバックを非表示 */
+      const fb = document.getElementById('feedback');
+      if (fb) fb.style.display = 'none';
 
+      /* 2) 元の処理で次の問題を表示 */
+      orig();
+
+      /* 3) (モバイル) 新しい問題位置へ自動スクロール */
+      if (window.matchMedia('(max-width:600px)').matches){
+        setTimeout(() => {
+          const stem = document.querySelector('#quiz-screen h2, .question-text');
+          if (stem) stem.scrollIntoView({behavior:'auto', block:'start'});
+        }, 30);
+      }
+    };
+    nextQuestion.__patched = true;
+  }
+});
+</script>
 </body>
 </html>
