@@ -5541,6 +5541,28 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 });
 </script>
+<script>
+document.addEventListener('DOMContentLoaded',()=>{
+  /* 生成直後の #feedback を監視して強制表示 */
+  const obs = new MutationObserver(muts=>{
+    muts.forEach(m=>{
+      if (m.addedNodes.length){
+        const fb = document.getElementById('feedback');
+        if (!fb) return;
 
+        /* ① モバイルなら position:static & display:block */
+        if (window.matchMedia('(max-width:600px)').matches){
+          fb.style.position = 'static';
+          fb.style.display  = 'block';
+        }
+
+        /* ② 少し遅らせて再スクロール */
+        setTimeout(()=>fb.scrollIntoView({behavior:'auto', block:'start'}), 50);
+      }
+    });
+  });
+  obs.observe(document.body,{childList:true, subtree:true});
+});
+</script>
 </body>
 </html>
